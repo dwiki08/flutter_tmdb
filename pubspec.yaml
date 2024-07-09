@@ -49,6 +49,7 @@ dev_dependencies:
   chopper_generator: ^8.0.0
   freezed: ^2.5.3
   json_serializable: ^6.8.0
+  riverpod_generator: ^2.4.2
 
 dependency_overrides:
   meta: ^1.15.0

@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:movie_db/domain/model/genre_model.dart';
 import 'package:movie_db/domain/model/movie_model.dart';
 import 'package:movie_db/presentation/components/divider_movie.dart';
 import 'package:movie_db/presentation/providers/movie_provider.dart';
@@ -28,39 +27,42 @@ class DescriptionMovie extends ConsumerStatefulWidget {
 
 class _DescriptionMovieState extends ConsumerState<DescriptionMovie> {
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(movieProvider.notifier).getMovie(widget.movie.id);
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final stateGenres = ref.watch(movieProvider.select((m) => m.value?.genres ?? []));
     log('build description');
+
     const double radius = 24;
     final posterWidth = widget.size.height * 0.2;
 
-    ref.listen(movieProvider, (_, state) {
-      state.showSnackBarOnError(context);
+    final movieProvider = movieStateProvider.call(id: widget.movie.id);
+
+    ref.listen(movieProvider, (_, next) {
+      next.showSnackBarOnError(context);
     });
 
-    List<Chip> genreChips(List<Genre> genres) {
-      List<Chip> chips = [];
-      for (final genre in genres) {
-        chips.add(
-          Chip(
-            label: Text(
-              genre.name,
-              style: const TextStyle(fontSize: 12),
+    Widget consumerGenres() {
+      return Consumer(builder: (context, ref, child) {
+        final genres =
+            ref.watch(movieProvider.select((s) => s.value?.genres)) ?? [];
+        List<Chip> chips = [];
+        for (final genre in genres) {
+          chips.add(
+            Chip(
+              label: Text(
+                genre.name,
+                style: const TextStyle(fontSize: 12),
+              ),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24)),
             ),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-          ),
+          );
+        }
+        return Wrap(
+          alignment: WrapAlignment.center,
+          runSpacing: defaultPadding / 2,
+          spacing: defaultPadding / 2,
+          children: chips,
         );
-      }
-      return chips;
+      });
     }
 
     return Stack(children: [
@@ -94,11 +96,7 @@ class _DescriptionMovieState extends ConsumerState<DescriptionMovie> {
             const SizedBox(height: defaultPadding),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
-              child: Wrap(
-                alignment: WrapAlignment.center,
-                spacing: defaultPadding / 2,
-                children: genreChips(stateGenres),
-              ),
+              child: consumerGenres(),
             ),
             const DividerMovie(),
             Padding(

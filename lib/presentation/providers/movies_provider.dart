@@ -1,26 +1,26 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_db/domain/model/movie_model.dart';
 import 'package:movie_db/domain/model/sort_by.dart';
-import 'package:movie_db/domain/repository/movie_repository.dart';
-import 'package:movie_db/providers/repository_provider.dart';
+import 'package:movie_db/domain/use_case/movie_use_case.dart';
+import 'package:movie_db/providers/use_case_provider.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-class MoviesNotifier extends StateNotifier<AsyncValue<List<Movie>>> {
-  MoviesNotifier(this._movieRepository) : super(const AsyncData([]));
+part 'movies_provider.g.dart';
 
-  final MovieRepository _movieRepository;
+@riverpod
+class MoviesState extends _$MoviesState {
+  late MovieUseCase movieUseCase;
 
-  void getRemoteMovies(SortBy sortBy) async {
-    state = const AsyncValue.loading();
+  @override
+  FutureOr<List<Movie>> build({required SortBy sortBy}) async {
+    movieUseCase = ref.read(movieUseCaseProvider);
+    final result = await movieUseCase.getMovies(sortBy);
+    return result.fold((e) => throw e, (m) => m);
+  }
+
+  Future<void> getMovies(SortBy sortBy) async {
+    state = const AsyncLoading();
     await Future.delayed(const Duration(seconds: 2));
-    final result = await _movieRepository.getMovies(sortBy);
-    result.fold((e) {
-      state = AsyncValue.error(e, StackTrace.current);
-    }, (data) {
-      state = AsyncValue.data(data);
-    });
+    final result = await movieUseCase.getMovies(sortBy);
+    result.fold((e) => throw e, (m) => state = AsyncData(m));
   }
 }
-
-final moviesProvider =
-    StateNotifierProvider<MoviesNotifier, AsyncValue<List<Movie>>>(
-        (ref) => MoviesNotifier(ref.read(movieRepositoryProvider)));

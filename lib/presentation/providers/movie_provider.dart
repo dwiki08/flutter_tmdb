@@ -1,24 +1,24 @@
-import 'package:either_dart/either.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_db/domain/model/movie_model.dart';
 import 'package:movie_db/domain/use_case/movie_use_case.dart';
 import 'package:movie_db/providers/use_case_provider.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-class MovieProvider extends StateNotifier<AsyncValue<Movie?>> {
-  MovieProvider({required this.movieUseCase}) : super(const AsyncData(null));
+part 'movie_provider.g.dart';
 
-  final MovieUseCase movieUseCase;
+@riverpod
+class MovieState extends _$MovieState {
+  late MovieUseCase movieUseCase;
 
-  void getMovie(int id) {
-    state = const AsyncValue.loading();
-    final result = movieUseCase.getMovie(id);
-    result.fold((e) {
-      state = AsyncValue.error(e, StackTrace.current);
-    }, (data) {
-      state = AsyncValue.data(data);
-    });
+  @override
+  FutureOr<Movie?> build({required int id}) async {
+    movieUseCase = ref.read(movieUseCaseProvider);
+    final result = await movieUseCase.getMovie(id);
+    return result.fold((e) => throw e, (m) => m);
+  }
+
+  Future<void> getMovie(int id) async {
+    state = const AsyncLoading();
+    final result = await movieUseCase.getMovie(id);
+    result.fold((e) => throw e, (m) => state = AsyncData(m));
   }
 }
-
-final movieProvider = StateNotifierProvider<MovieProvider, AsyncValue<Movie?>>(
-    (ref) => MovieProvider(movieUseCase: ref.read(movieUseCaseProvider)));

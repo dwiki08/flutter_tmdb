@@ -23,30 +23,23 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   SortBy _selectedValue = SortBy.popularity;
 
-  _itemMenuColor(SortBy value) {
-    return _selectedValue == value ? colorAccent : Colors.black;
-  }
-
-  _setFetchMovies() {
-    ref.read(moviesProvider.notifier).getRemoteMovies(_selectedValue);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _setFetchMovies();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     log('building home_screen');
+    final moviesProvider = moviesStateProvider.call(sortBy: _selectedValue);
     final state = ref.watch(moviesProvider);
 
-    ref.listen(moviesProvider, (_, state) {
-      state.showSnackBarOnError(context);
+    ref.listen(moviesProvider, (_, next) {
+      next.showSnackBarOnError(context);
     });
+
+    fetchMovies() {
+      ref.read(moviesProvider.notifier).getMovies(_selectedValue).ignore();
+    }
+
+    itemMenuColor(SortBy value) {
+      return _selectedValue == value ? colorAccent : Colors.black;
+    }
 
     gridMovies() {
       if (state.isLoading) {
@@ -64,7 +57,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             icon: SvgPicture.asset('assets/icons/ic_sort.svg'),
             onSelected: (SortBy item) {
               _selectedValue = item;
-              _setFetchMovies();
+              fetchMovies();
             },
             itemBuilder: (BuildContext context) {
               return <PopupMenuEntry<SortBy>>[
@@ -72,18 +65,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   value: SortBy.popularity,
                   child: Text('Popular',
                       style:
-                          TextStyle(color: _itemMenuColor(SortBy.popularity))),
+                          TextStyle(color: itemMenuColor(SortBy.popularity))),
                 ),
                 PopupMenuItem<SortBy>(
                   value: SortBy.latest,
                   child: Text('Latest',
-                      style: TextStyle(color: _itemMenuColor(SortBy.latest))),
+                      style: TextStyle(color: itemMenuColor(SortBy.latest))),
                 ),
                 PopupMenuItem<SortBy>(
                   value: SortBy.voteCount,
                   child: Text('Vote Count',
                       style:
-                          TextStyle(color: _itemMenuColor(SortBy.voteCount))),
+                          TextStyle(color: itemMenuColor(SortBy.voteCount))),
                 ),
               ];
             },
