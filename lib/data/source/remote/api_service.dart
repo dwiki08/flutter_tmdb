@@ -10,9 +10,9 @@ part 'api_service.chopper.dart';
 abstract class ApiService extends ChopperService {
   static ApiService create([ChopperClient? client]) => _$ApiService(client);
 
-  @Get(path: '/discover/movie')
+  @GET(path: '/discover/movie')
   Future<Response<MoviesResponse>> getMovies(@Query('sort_by') String sortBy);
 
-  @Get(path: '/movie/{movie_id}')
+  @GET(path: '/movie/{movie_id}')
   Future<Response<MovieResponse>> getMovie(@Path('movie_id') int id);
 }

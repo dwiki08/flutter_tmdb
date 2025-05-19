@@ -34,9 +34,10 @@ dependencies:
   flutter_bloc: ^8.1.6
   flutter_svg: ^2.0.10+1
   either_dart: ^1.0.0
-  flutter_riverpod: ^2.5.1
-  riverpod_annotation: ^2.3.5
-  freezed_annotation: ^2.4.1
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+  riverpod_lint: ^2.6.5
+  freezed_annotation: ^3.0.0
   chopper: ^8.0.0
   json_annotation: ^4.9.0
 
@@ -47,7 +48,7 @@ dev_dependencies:
     sdk: flutter
   build_runner: ^2.4.6
   chopper_generator: ^8.0.0
-  freezed: ^2.5.3
+  freezed: ^3.0.6
   json_serializable: ^6.8.0
 
 dependency_overrides:
