@@ -6,7 +6,7 @@ part of 'movies_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$moviesStateHash() => r'64bd468b8ae0cfaf4bcece856d190c5def4a0249';
+String _$moviesStateHash() => r'4a229a4b51f66be5dd387abfcd24edf2811751a8';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -157,6 +157,8 @@ class MoviesStateProvider
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin MoviesStateRef on AutoDisposeAsyncNotifierProviderRef<List<Movie>> {
   /// The parameter `sortBy` of this provider.
   SortBy get sortBy;
@@ -171,4 +173,4 @@ class _MoviesStateProviderElement
   SortBy get sortBy => (origin as MoviesStateProvider).sortBy;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

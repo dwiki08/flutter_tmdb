@@ -6,7 +6,7 @@ part of 'movie_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$movieStateHash() => r'9f7cdeac768da025e63a3323cfa17c30f0ff1ba3';
+String _$movieStateHash() => r'f9561eac0dee120c13f1b47f1654e4f7ab975001';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -155,6 +155,8 @@ class MovieStateProvider
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin MovieStateRef on AutoDisposeAsyncNotifierProviderRef<Movie?> {
   /// The parameter `id` of this provider.
   int get id;
@@ -169,4 +171,4 @@ class _MovieStateProviderElement
   int get id => (origin as MovieStateProvider).id;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -4,7 +4,7 @@ import 'package:movie_db/domain/model/genre_model.dart';
 part 'movie_model.freezed.dart';
 
 @freezed
-class Movie with _$Movie {
+abstract class Movie with _$Movie {
   const factory Movie({
     required int id,
     required String posterUrl,

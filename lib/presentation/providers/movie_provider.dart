@@ -19,6 +19,7 @@ class MovieState extends _$MovieState {
   Future<void> getMovie(int id) async {
     state = const AsyncLoading();
     final result = await movieUseCase.getMovie(id);
-    result.fold((e) => throw e, (m) => state = AsyncData(m));
+    result.fold((e) => state = AsyncError(e, StackTrace.current),
+        (m) => state = AsyncData(m));
   }
 }
