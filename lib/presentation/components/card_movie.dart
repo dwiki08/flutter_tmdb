@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_db/domain/model/movie_model.dart';
+import 'package:movie_db/presentation/components/load_image.dart';
 import 'package:movie_db/utils/constants.dart';
 
 class CardMovie extends StatelessWidget {
@@ -21,11 +22,7 @@ class CardMovie extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Flexible(
-                child: Image.network(
-                  urlImage500 + movie.posterUrl,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                ),
+                child: LoadImage(url: urlImage500 + movie.posterUrl),
               ),
               Padding(
                 padding: const EdgeInsets.all(defaultPadding / 2),

@@ -40,6 +40,7 @@ dependencies:
   riverpod_lint: ^2.6.5
   chopper: ^8.0.0
   json_annotation: ^4.9.0
+  dio: ^5.8.0+1
 
   cupertino_icons: ^1.0.6
 

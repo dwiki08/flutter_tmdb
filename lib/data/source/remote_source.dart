@@ -1,9 +1,7 @@
-import 'dart:io';
-
 import 'package:either_dart/either.dart';
-import 'package:movie_db/data/source/mapper/mapper_dto.dart';
-import 'package:movie_db/data/source/remote/api_service.dart';
+import 'package:movie_db/data/source/remote/dio_client.dart';
 import 'package:movie_db/data/source/remote/response/movie_response.dart';
+import 'package:movie_db/data/source/remote/response/movies_response.dart';
 import 'package:movie_db/domain/model/error_result.dart';
 import 'package:movie_db/domain/model/movie_model.dart';
 
@@ -14,21 +12,23 @@ abstract class RemoteDataSource {
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
-  final ApiService apiService;
+  final DioClient dioClient;
 
-  RemoteDataSourceImpl({required this.apiService});
+  RemoteDataSourceImpl({required this.dioClient});
 
   @override
   Future<Either<ErrorResult, List<Movie>>> getMovies(String sortBy) async {
     try {
-      final response = await apiService.getMovies(sortBy);
-      if (response.isSuccessful) {
-        List<MovieResponse> results = response.body?.results ?? List.empty();
-        return Right(results.map((e) => e.toMovie()).toList());
-      } else {
-        throw HttpException(response.statusCode.toString());
-      }
-    } on Exception catch (e) {
+      final response = await dioClient.dio.get(
+        '/discover/movie',
+        queryParameters: {
+          'sort_by': sortBy,
+        },
+      );
+      final listMovies =
+          MoviesResponse.fromJson(response.data).results ?? List.empty();
+      return Right(listMovies.map((e) => e.toMovie()).toList());
+    } catch (e) {
       return Left(ErrorResult.createResult(e));
     }
   }
@@ -36,13 +36,11 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   @override
   Future<Either<ErrorResult, Movie>> getMovie(int id) async {
     try {
-      final response = await apiService.getMovie(id);
-      if (response.isSuccessful && response.body != null) {
-        return Right(response.body!.toMovie());
-      } else {
-        throw HttpException(response.statusCode.toString());
-      }
-    } on Exception catch (e) {
+      final response = await dioClient.dio.get(
+        '/movie/$id',
+      );
+      return Right(MovieResponse.fromJson(response.data).toMovie());
+    } catch (e) {
       return Left(ErrorResult.createResult(e));
     }
   }

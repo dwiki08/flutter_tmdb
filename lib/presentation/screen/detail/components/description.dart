@@ -33,16 +33,15 @@ class _DescriptionMovieState extends ConsumerState<DescriptionMovie> {
     const double radius = 24;
     final posterWidth = widget.size.height * 0.2;
 
-    final movieProvider = movieStateProvider.call(id: widget.movie.id);
+    final getMovie = getMovieProvider(id: widget.movie.id);
 
-    ref.listen(movieProvider, (_, next) {
+    ref.listen(getMovie, (_, next) {
       next.showSnackBarOnError(context);
     });
 
     Widget consumerGenres() {
       return Consumer(builder: (context, ref, child) {
-        final genres =
-            ref.watch(movieProvider.select((s) => s.value?.genres)) ?? [];
+        final genres = ref.watch(getMovie.select((s) => s.value?.genres)) ?? [];
         List<Chip> chips = [];
         for (final genre in genres) {
           chips.add(
@@ -149,11 +148,11 @@ class _DescriptionMovieState extends ConsumerState<DescriptionMovie> {
             top: (widget.size.height * widget.ratio / 2), left: defaultPadding),
         clipBehavior: Clip.antiAlias,
         elevation: 4,
-        child: Image.network(
-          urlImage500 + widget.movie.posterUrl,
-          fit: BoxFit.cover,
-          width: posterWidth,
-        ),
+        child: Image.network(urlImage500 + widget.movie.posterUrl,
+            fit: BoxFit.cover,
+            width: posterWidth,
+            errorBuilder: (context, error, stackTrace) =>
+                Container(color: Colors.grey)),
       ),
     ]);
   }

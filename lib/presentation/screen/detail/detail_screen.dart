@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:movie_db/domain/model/movie_model.dart';
 import 'package:movie_db/presentation/components/app_bar_movie.dart';
+import 'package:movie_db/presentation/components/load_image.dart';
 import 'package:movie_db/utils/constants.dart';
 
 import 'components/description.dart';
@@ -37,12 +38,9 @@ class _DetailScreenState extends State<DetailScreen> {
           children: [
             Stack(
               children: [
-                Image.network(
-                  urlImageOriginal + (movie.backdropUrl ?? ''),
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: size.height * ratio + 24,
-                ),
+                LoadImage(
+                    url: urlImageOriginal + (movie.backdropUrl),
+                    height: size.height * ratio + 24),
                 DescriptionMovie(size: size, ratio: ratio, movie: movie),
               ],
             )

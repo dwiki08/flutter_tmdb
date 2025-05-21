@@ -7,9 +7,10 @@ import 'package:movie_db/domain/model/sort_by.dart';
 import 'package:movie_db/presentation/components/app_bar_movie.dart';
 import 'package:movie_db/presentation/components/grid_movies.dart';
 import 'package:movie_db/presentation/components/loading.dart';
-import 'package:movie_db/presentation/providers/movies_provider.dart';
 import 'package:movie_db/utils/constants.dart';
 import 'package:movie_db/utils/extensions.dart';
+
+import '../../providers/movie_provider.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key, required this.title});
@@ -26,19 +27,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     log('building home_screen');
-    final moviesProvider = moviesStateProvider.call(sortBy: _selectedValue);
+    final moviesProvider = getMoviesProvider(sortBy: _selectedValue);
     final state = ref.watch(moviesProvider);
 
     ref.listen(moviesProvider, (_, next) {
       next.showSnackBarOnError(context);
     });
 
-    fetchMovies() {
-      ref.read(moviesProvider.notifier).getMovies(_selectedValue).ignore();
-    }
-
     itemMenuColor(SortBy value) {
-      return _selectedValue == value ? colorAccent : Colors.black;
+      return _selectedValue == value ? textColor : Colors.black;
     }
 
     gridMovies() {
@@ -56,8 +53,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           PopupMenuButton<SortBy>(
             icon: SvgPicture.asset('assets/icons/ic_sort.svg'),
             onSelected: (SortBy item) {
-              _selectedValue = item;
-              fetchMovies();
+              setState(() => _selectedValue = item);
             },
             itemBuilder: (BuildContext context) {
               return <PopupMenuEntry<SortBy>>[
@@ -75,8 +71,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 PopupMenuItem<SortBy>(
                   value: SortBy.voteCount,
                   child: Text('Vote Count',
-                      style:
-                          TextStyle(color: itemMenuColor(SortBy.voteCount))),
+                      style: TextStyle(color: itemMenuColor(SortBy.voteCount))),
                 ),
               ];
             },

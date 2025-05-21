@@ -1,42 +1,36 @@
-import 'dart:io';
+import 'dart:developer';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 @immutable
 class ErrorResult {
   final String message;
   final int? code;
-  final Exception? exception;
+  final Object? error;
 
-  const ErrorResult({required this.message, this.code, this.exception});
+  const ErrorResult({required this.message, this.code, this.error});
 
-  static ErrorResult createResult(Exception exception) {
+  static ErrorResult createResult(Object error) {
     String errorMsg = 'Error';
-    int code = 0;
+    int? code;
     try {
-      if (exception is HttpException) {
-        code = int.parse(exception.message);
-        errorMsg = ErrorMsg.unknownResponse.message;
-      } else if (exception is IOException) {
-        code = 1;
-        errorMsg = ErrorMsg.networkError.message;
+      if (error is DioException) {
+        log('dioException: [${error.response?.realUri}] - $error');
+        code = error.response?.statusCode;
+        errorMsg = error.response?.statusMessage ?? "Network Error";
+      } else if (error is Error) {
+        log('error: ${error.toString()}');
+        errorMsg = error.toString();
+      } else if (error is Exception) {
+        log('exception: ${error.toString()}');
+        errorMsg = error.toString();
       } else {
-        code = 0;
-        errorMsg = ErrorMsg.unknownError.message;
+        errorMsg = "Unknown Error";
       }
-      return ErrorResult(message: errorMsg, exception: exception, code: code);
+      return ErrorResult(message: errorMsg, error: error, code: code);
     } on Exception catch (e) {
-      return ErrorResult(message: errorMsg, exception: e, code: code);
+      return ErrorResult(message: errorMsg, error: e, code: code);
     }
   }
-}
-
-enum ErrorMsg {
-  networkError("Network error"),
-  unknownResponse("HTTP error"),
-  unknownError("Unknown error");
-
-  final String message;
-
-  const ErrorMsg(this.message);
 }
